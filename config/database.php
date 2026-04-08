@@ -2,103 +2,113 @@
 class Database {
     private static $instance = null;
     private $db;
-
+    
     private function __construct() {
-        $dbPath = __DIR__ . '/../database.sqlite';
+        // Konfigurasi MySQL
+        $host = 'localhost';
+        $dbname = 'cahaya_dimensi_bumi';
+        $username = 'root';
+        $password = '';
+        
         try {
-            $this->db = new PDO('sqlite:' . $dbPath);
-            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ];
+            
+            $this->db = new PDO($dsn, $username, $password, $options);
             $this->createTables();
         } catch(PDOException $e) {
             die("Database Error: " . $e->getMessage());
         }
     }
-
+    
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
-
+    
     public function getConnection() {
         return $this->db;
     }
-
+    
     private function createTables() {
         $db = $this->db;
 
         $db->exec("CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            name TEXT NOT NULL,
-            role TEXT DEFAULT 'admin',
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            role VARCHAR(50) DEFAULT 'admin',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         $db->exec("CREATE TABLE IF NOT EXISTS projects (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            company_name TEXT NOT NULL,
-            location TEXT NOT NULL,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            company_name VARCHAR(255) NOT NULL,
+            location VARCHAR(255) NOT NULL,
             description TEXT,
-            main_photo TEXT,
+            main_photo VARCHAR(255),
             other_media TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )");
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         $db->exec("CREATE TABLE IF NOT EXISTS blogs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            slug TEXT UNIQUE NOT NULL,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            slug VARCHAR(255) UNIQUE NOT NULL,
             content TEXT NOT NULL,
-            image TEXT,
-            status TEXT DEFAULT 'draft',
+            image VARCHAR(255),
+            status VARCHAR(50) DEFAULT 'draft',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )");
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         $db->exec("CREATE TABLE IF NOT EXISTS quotations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            quotation_number TEXT UNIQUE NOT NULL,
-            quotation_date TEXT NOT NULL,
-            valid_until TEXT NOT NULL,
-            salesperson TEXT NOT NULL,
-            company_name TEXT NOT NULL,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            quotation_number VARCHAR(100) UNIQUE NOT NULL,
+            quotation_date DATE NOT NULL,
+            valid_until DATE NOT NULL,
+            salesperson VARCHAR(255) NOT NULL,
+            company_name VARCHAR(255) NOT NULL,
             address TEXT,
-            city TEXT,
-            zip_code TEXT,
+            city VARCHAR(100),
+            zip_code VARCHAR(20),
             project_description TEXT,
             line_items TEXT NOT NULL,
-            vat_applied INTEGER DEFAULT 0,
-            vat_percentage REAL DEFAULT 11,
+            vat_applied TINYINT DEFAULT 0,
+            vat_percentage DECIMAL(5,2) DEFAULT 11.00,
             notes TEXT,
             terms TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )");
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         $db->exec("CREATE TABLE IF NOT EXISTS invoices (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            invoice_number TEXT UNIQUE NOT NULL,
-            invoice_date TEXT NOT NULL,
-            due_date TEXT NOT NULL,
-            salesperson TEXT NOT NULL,
-            company_name TEXT NOT NULL,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            invoice_number VARCHAR(100) UNIQUE NOT NULL,
+            invoice_date DATE NOT NULL,
+            due_date DATE NOT NULL,
+            salesperson VARCHAR(255) NOT NULL,
+            company_name VARCHAR(255) NOT NULL,
             address TEXT,
-            city TEXT,
-            zip_code TEXT,
+            city VARCHAR(100),
+            zip_code VARCHAR(20),
             project_description TEXT,
             line_items TEXT NOT NULL,
-            vat_applied INTEGER DEFAULT 0,
-            vat_percentage REAL DEFAULT 11,
+            vat_applied TINYINT DEFAULT 0,
+            vat_percentage DECIMAL(5,2) DEFAULT 11.00,
             notes TEXT,
             terms TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )");
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         // Create default admin if not exists
         $stmt = $db->query("SELECT COUNT(*) FROM users");

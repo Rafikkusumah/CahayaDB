@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>
-        tailwind.config = { theme: { extend: { colors: { primary: '#1e3a5f', secondary: '#2c5282', accent: '#d69e2e' } } } }
+        tailwind.config = { theme: { extend: { colors: { primary: '#c53030', secondary: '#9b2c2c', accent: '#d69e2e' } } } }
     </script>
     <style>html { scroll-behavior: smooth; }</style>
 </head>
@@ -16,7 +16,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="/" class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center"><i class="fas fa-building text-white"></i></div>
+                    <img src="/assets/images/logo.png" alt="Logo" class="h-10 w-auto">
                     <span class="text-white font-bold text-xl">CDB</span>
                 </a>
                 <div class="hidden md:flex items-center space-x-8">

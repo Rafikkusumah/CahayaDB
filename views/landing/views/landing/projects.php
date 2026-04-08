@@ -15,7 +15,8 @@
                 <div class="p-6">
                     <h3 class="text-xl font-bold text-primary mb-2"><?= htmlspecialchars($p['company_name']) ?></h3>
                     <p class="text-gray-500 mb-2"><i class="fas fa-map-marker-alt mr-2"></i><?= htmlspecialchars($p['location']) ?></p>
-                    <p class="text-gray-600 text-sm"><?= htmlspecialchars($p['description']) ?></p>
+                    <p class="text-gray-600 text-sm mb-4"><?= htmlspecialchars($p['description']) ?></p>
+                    <a href="#projects" class="inline-block bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-secondary transition">View Details</a>
                 </div>
             </div>
             <?php endforeach; ?>

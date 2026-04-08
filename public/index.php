@@ -21,9 +21,9 @@ $blogs = $db->query("SELECT * FROM blogs WHERE status = 'published' ORDER BY cre
             theme: {
                 extend: {
                     colors: {
-                        primary: '#1e3a5f',
-                        secondary: '#2c5282',
-                        accent: '#d69e2e',
+                        primary: '#DC2626', // Merah cerah
+                        secondary: '#991B1B', // Merah gelap
+                        accent: '#FCA5A5', // Merah muda
                     }
                 }
             }
@@ -45,10 +45,8 @@ $blogs = $db->query("SELECT * FROM blogs WHERE status = 'published' ORDER BY cre
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <a href="/" class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                            <i class="fas fa-building text-white text-lg"></i>
-                        </div>
-                        <span class="text-white font-bold text-xl">CDB</span>
+                        <img src="/assets/images/logo.svg" alt="CDB Logo" class="w-10 h-10 object-contain">
+                        <span class="text-white font-bold text-xl">Cahaya Dimensi Bumi</span>
                     </a>
                 </div>
                 
@@ -174,7 +172,11 @@ $blogs = $db->query("SELECT * FROM blogs WHERE status = 'published' ORDER BY cre
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-primary mb-2"><?= sanitize($project['company_name']) ?></h3>
                         <p class="text-gray-500 mb-3"><i class="fas fa-map-marker-alt mr-2"></i><?= sanitize($project['location']) ?></p>
-                        <p class="text-gray-600 text-sm line-clamp-3"><?= sanitize($project['description']) ?></p>
+                        <p class="text-gray-600 text-sm line-clamp-3 mb-4"><?= sanitize($project['description']) ?></p>
+                        <button onclick="showProjectDetail(<?= htmlspecialchars(json_encode($project)) ?>)" 
+                                class="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-secondary transition">
+                            Baca Selengkapnya
+                        </button>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -212,8 +214,8 @@ $blogs = $db->query("SELECT * FROM blogs WHERE status = 'published' ORDER BY cre
                             <i class="far fa-calendar mr-1"></i> <?= formatDate($blog['created_at']) ?>
                         </div>
                         <h3 class="text-lg font-bold text-primary mb-2"><?= sanitize($blog['title']) ?></h3>
-                        <p class="text-gray-600 text-sm line-clamp-3"><?= substr(strip_tags($blog['content']), 0, 150) ?>...</p>
-                        <a href="#" class="inline-block mt-4 text-accent font-semibold hover:text-yellow-600">Baca Selengkapnya →</a>
+                        <p class="text-gray-600 text-sm line-clamp-3 mb-4"><?= substr(strip_tags($blog['content']), 0, 150) ?>...</p>
+                        <a href="/blog/detail.php?id=<?= $blog['id'] ?>" class="inline-block mt-4 text-primary font-semibold hover:text-secondary">Baca Selengkapnya →</a>
                     </div>
                 </article>
                 <?php endforeach; ?>
@@ -349,6 +351,60 @@ $blogs = $db->query("SELECT * FROM blogs WHERE status = 'published' ORDER BY cre
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
+
+        // Project Detail Modal
+        function showProjectDetail(project) {
+            const modal = document.createElement('div');
+            modal.id = 'project-modal';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="relative">
+                        ${project.main_photo ? 
+                            `<img src="${project.main_photo}" alt="${project.company_name}" class="w-full h-64 object-cover rounded-t-2xl">` :
+                            `<div class="w-full h-64 bg-primary flex items-center justify-center rounded-t-2xl">
+                                <i class="fas fa-building text-6xl text-white opacity-50"></i>
+                            </div>`
+                        }
+                        <button onclick="closeProjectDetail()" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100">
+                            <i class="fas fa-times text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-8">
+                        <h2 class="text-3xl font-bold text-primary mb-4">${project.company_name}</h2>
+                        <div class="flex items-center text-gray-500 mb-6">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>${project.location}</span>
+                        </div>
+                        <div class="prose max-w-none">
+                            <h3 class="text-xl font-semibold text-primary mb-3">Deskripsi Project</h3>
+                            <p class="text-gray-600 mb-6">${project.description}</p>
+                            ${project.services ? `
+                                <h3 class="text-xl font-semibold text-primary mb-3">Layanan</h3>
+                                <p class="text-gray-600 mb-6">${project.services}</p>
+                            ` : ''}
+                            ${project.year ? `
+                                <h3 class="text-xl font-semibold text-primary mb-3">Tahun</h3>
+                                <p class="text-gray-600 mb-6">${project.year}</p>
+                            ` : ''}
+                        </div>
+                        <button onclick="closeProjectDetail()" class="mt-6 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary transition">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProjectDetail() {
+            const modal = document.getElementById('project-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        }
     </script>
 </body>
 </html>

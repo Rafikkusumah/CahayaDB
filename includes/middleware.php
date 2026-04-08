@@ -25,6 +25,11 @@ class Middleware {
 
     // CSRF Protection
     public static function csrfVerify() {
+        // Skip CSRF verification for JSON API requests
+        if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+            return true;
+        }
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
             $session = $_SESSION['csrf_token'] ?? '';

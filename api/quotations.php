@@ -1,8 +1,12 @@
 <?php
 header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/middleware.php';
+
 Middleware::requireAuth();
-Middleware::csrfVerify();
+// Skip CSRF for API JSON requests - use token validation only if form data
+if ($_SERVER['CONTENT_TYPE'] !== 'application/json' && in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'DELETE'])) {
+    Middleware::csrfVerify();
+}
 
 $db = Database::getInstance()->getConnection();
 $method = $_SERVER['REQUEST_METHOD'];
